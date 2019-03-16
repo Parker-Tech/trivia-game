@@ -34,9 +34,12 @@ $(function(){
   }
 
   var i = 60;
+  var questionCount = 0;
 
   function setQuestion(){
-
+    // $(".question-asked").append(
+    //   $("<p></p>").
+    // )                 apppend the question based on how many questions that ive asked
   }
   
   $("#start-button").on("click", function(){
