@@ -1,7 +1,4 @@
-//shorthand for document.ready(function(){
-  //})
-
-$(function(){
+$(function(){ //shorthand for document.ready(function(){
   var questions = {
     question1: {
       question: "Why did the chicken cross the road?",
@@ -40,6 +37,9 @@ $(function(){
   var t = 60;
   var questionCount = 1;
   var questionAnswered = false;
+  var whatQuestion;
+  var amountCorrect = 0;
+  var amountWrong = 0;
 
   function clearTrivaStage(){
     $("#time-remaining").empty();
@@ -52,27 +52,32 @@ $(function(){
 
   function setQuestion(questionCount){
     questionAnswered = false;
-    var whatQuestion = "question" + (questionCount);
+    whatQuestion = "question" + (questionCount);
     $("#question-asked").text(questions[whatQuestion].question);
     for(i = 1; i < 5; i++){
       var wrongAnsweri = "wrongAnswer" + i;
       $("#answer" + i).text(questions[whatQuestion][wrongAnsweri]);
-      $("#answer" + i).on("click", function(){
-        //check if selected answer is right or wrong
-        questionAnswered = true;
-        if($(this).text() == questions[whatQuestion].answer){
-          $("#question-asked").html("<h1>CORRECT</h1>");
-          setTimeout(clearTrivaStage, 2000);
-        }else{
-          $("#question-asked").html("<h1>WRONG</h1>");
-          setTimeout(clearTrivaStage, 2000);
-        }
-        questionAnswered = false;
-      });
+    }
+  }
+
+  function scoreBoard(){
+    //will show amount correct
+    $(".trivia-stage").empty();
+    var scoreDiv = $("<div>").html("<h3>Amount Correct" + amountCorrect + "</h3><br><h3>Amount Wrong" + amountWrong + "</h3>")
+    $(".trivia-stage").append(scoreDiv);
+  }
+
+  function checkEnd(){
+    if(whatQuestion == "question4"){
+      setTimeout(scoreBoard, 10000).then(function(){
+        location.reload();
+      })
     }
   }
   
   $("#start-button").on("click", function(){
+    //probably delete start button here
+    $(".empty-start-class").empty();
     questionAnswered = false;
     $("#time-remaining").text("Seconds left: " + t);
     setQuestion(questionCount);
@@ -80,11 +85,29 @@ $(function(){
       $("#time-remaining").html("Seconds left: " + t);
       t--;
       if(t <= 0 || questionAnswered == true){
+        console.log(t);
         questionCount++;
+        questionAnswered = false;
         setQuestion(questionCount);
       }
     }, 1000);
-
   });
+
+  $(document).on("click", ".trivia-answer", function(){
+    // check if selected answer is right or wrong
+
+    questionAnswered = true;
+    if($(this).text() == questions[whatQuestion].answer){
+      $("#question-asked").html("<h1>CORRECT</h1>");
+      amountCorrect++;
+      checkEnd();
+      setTimeout(clearTrivaStage, 2000);
+    }else{
+      $("#question-asked").html("<h1>WRONG</h1>");
+      amountWrong++;
+      checkEnd();
+      setTimeout(clearTrivaStage, 2000);
+    }
+  })
 
 });
